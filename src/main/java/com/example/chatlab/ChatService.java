@@ -58,6 +58,12 @@ public class ChatService {
                 .retrieve()
                 .body(LlmResponse.class);
 
+        if (response == null
+                || response.choices() == null
+                || response.choices().isEmpty()) {
+            throw new IllegalStateException("Empty or null response received from LLM API");
+        }
+
         // 6. Extract AI response, save to memory, and return to user
         String aiText = response.choices().get(0).message().content();
         history.add(new LlmMessage("assistant", aiText));
