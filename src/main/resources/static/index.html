@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Lab</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .chat-container { width: 400px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        select, input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #218838; }
+        #response-area { margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 6px; min-height: 50px; font-style: italic; color: #495057; white-space: pre-wrap; }
+        .loader { color: #666; font-size: 0.9em; display: none; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <h2>AI Chat Interface</h2>
+
+    <label for="personality">Choose Personality:</label>
+    <select id="personality">
+        <option value="pirate">Pirate</option>
+        <option value="coder">Senior Coder</option>
+        <option value="poet">The Poet</option>
+    </select>
+
+    <input type="text" id="message" placeholder="Type your message here..." />
+    <button onclick="sendChat()">Send </button>
+
+    <div id="loader" class="loader">AI is thinking...</div>
+    <div id="response-area">AI response will appear here...</div>
+</div>
+
+<script>
+    async function sendChat() {
+        const personality = document.getElementById('personality').value;
+        const message = document.getElementById('message').value;
+        const responseArea = document.getElementById('response-area');
+        const loader = document.getElementById('loader');
+
+        if (!message) return alert("Please type something!");
+
+        // Show loading state
+        loader.style.display = "block";
+        responseArea.innerText = "";
+
+        try {
+            const response = await fetch('/api/v1/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    personality: personality,
+                    message: message,
+                    sessionId: "web-session-001" // You could make this random
+                })
+            });
+
+            const data = await response.json();
+            responseArea.innerText = data.response;
+        } catch (error) {
+            responseArea.innerText = "Error: " + error.message;
+        } finally {
+            loader.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>
